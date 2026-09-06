@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>極秘業務指示システム</title>
-<!-- バーコード読み取り用のライブラリ -->
-<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <style>
     body {
         font-family: "MS PGothic", "Hiragino Kaku Gothic ProN", sans-serif;
@@ -23,22 +21,26 @@
         background-color: #ffffff;
         border: 2px solid #ccc;
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        display: none;
+        display: none; /* JSで切り替えるため初期は非表示 */
+        height: 600px;
+        position: relative;
     }
-    #scan-screen {
-        display: block;
-        text-align: center;
-        padding: 20px;
-    }
+    
+    /* ヘッダー */
     .header {
         background-color: #0033cc;
         color: #ffffff;
         font-size: 16px;
         font-weight: bold;
         text-align: center;
-        padding: 8px 0;
+        padding: 10px 0;
         letter-spacing: 2px;
-        margin-bottom: 15px;
+    }
+
+    /* --- 1. 待機画面 --- */
+    #standby-screen {
+        display: block;
+        text-align: center;
     }
     .intro-text {
         font-size: 14px;
@@ -47,39 +49,108 @@
         line-height: 1.5;
         border: 1px solid #ff9900;
         background-color: #ffffee;
-        padding: 12px;
-        margin-bottom: 20px;
+        padding: 15px;
+        margin: 20px;
         font-weight: bold;
     }
-    #reader {
-        width: 100%;
-        margin-bottom: 15px;
-        border: 2px solid #333;
-        box-sizing: border-box;
-    }
-    .start-btn {
-        background-color: #333;
+    .trigger-btn {
+        background-color: #cc0000;
         color: white;
         padding: 15px 20px;
         font-size: 16px;
-        border: none;
-        border-radius: 4px;
+        border: 2px outset #ff6666;
         cursor: pointer;
-        width: 100%;
+        width: 80%;
         font-weight: bold;
+        margin-top: 30px;
+    }
+    .trigger-btn:active {
+        border-style: inset;
     }
     .director-credit {
-        margin-top: 25px;
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
         font-size: 12px;
         color: #999;
-        text-align: right;
     }
-    .mail-form {
+
+    /* --- 2. 着信画面 --- */
+    #calling-screen {
+        background-color: #111;
+        color: #fff;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .blink-text {
+        font-size: 24px;
+        color: #00ff00;
+        animation: blink 0.5s infinite alternate;
+        margin-bottom: 20px;
+    }
+    @keyframes blink {
+        0% { opacity: 1; }
+        100% { opacity: 0; }
+    }
+    .caller-name {
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 50px;
+    }
+    .call-btn {
+        background-color: #00cc00;
+        color: white;
+        padding: 15px 0;
+        font-size: 18px;
+        font-weight: bold;
+        border: 2px outset #66ff66;
+        width: 60%;
+        margin: 0 auto 20px;
+        cursor: pointer;
+    }
+    .call-btn:active { border-style: inset; }
+
+    /* --- 3. パスワード画面 --- */
+    #password-screen {
+        text-align: center;
+    }
+    .pw-container {
+        margin-top: 100px;
+        padding: 20px;
+    }
+    .pw-title {
+        font-size: 16px;
+        color: #0033cc;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+    .pw-input {
+        font-size: 32px;
+        letter-spacing: 10px;
+        text-align: center;
+        width: 150px;
         padding: 10px;
+        border: 2px solid #ccc;
+        margin-bottom: 30px;
+    }
+    .pw-btn {
+        background-color: #333;
+        color: white;
+        padding: 12px 30px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+    }
+
+    /* --- 4. メール画面 --- */
+    .mail-form {
+        padding: 15px;
     }
     .form-group {
         border-bottom: 1px dotted #999;
-        padding: 8px 0;
+        padding: 10px 0;
         display: flex;
         align-items: center;
     }
@@ -98,7 +169,7 @@
         color: #333;
     }
     .body-group {
-        padding: 10px 0;
+        padding: 15px 0;
     }
     .body-group label {
         color: #0033cc;
@@ -109,7 +180,7 @@
     }
     .body-group textarea {
         width: 100%;
-        height: 200px;
+        height: 250px;
         border: 1px solid #ccc;
         font-size: 15px;
         padding: 10px;
@@ -119,20 +190,23 @@
         line-height: 1.6;
     }
     .footer-buttons {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        box-sizing: border-box;
         display: flex;
-        justify-content: space-between;
-        padding: 10px;
+        justify-content: center;
+        padding: 15px;
         background-color: #e0e0e0;
         border-top: 1px solid #ccc;
     }
     .btn {
         background-color: #f8f8f8;
         border: 1px outset #ccc;
-        padding: 10px 20px;
-        font-size: 14px;
+        padding: 12px 30px;
+        font-size: 16px;
         cursor: pointer;
-        width: 45%;
-        text-align: center;
+        font-weight: bold;
     }
     .btn:active {
         border: 1px inset #ccc;
@@ -141,23 +215,37 @@
 </head>
 <body>
 
-<div id="scan-screen" class="mobile-container">
-    <div class="header">i-mode ﾊﾞｰｺｰﾄﾞﾘｰﾀﾞ</div>
-    
+<!-- 1. 待機画面（司会操作用） -->
+<div id="standby-screen" class="mobile-container">
+    <div class="header">i-mode アイコミ待機中</div>
     <div class="intro-text">
         ブラック企業の社畜である皆さんは今日の主役である田中智先生の指示にすべて答える必要があります。<br><br>
         これから指示のアイコミを流しますので、それぞれしっかりと報告して下さい。
     </div>
-    
-    <div id="reader" style="display: none;"></div>
-    
-    <button id="start-btn" class="start-btn" onclick="startCamera()">スキャンを起動する</button>
-    
-    <div class="director-credit">
-        directed by ファンタオナニスタ蟹江
+    <button class="trigger-btn" onclick="startCall()">着信を発動する</button>
+    <div class="director-credit">directed by ファンタオナニスタ蟹江</div>
+</div>
+
+<!-- 2. 着信画面（鬼電） -->
+<div id="calling-screen" class="mobile-container">
+    <div class="blink-text">着信中...</div>
+    <div class="caller-name">田中 智 DM</div>
+    <button class="call-btn" onclick="answerCall()">応答する</button>
+</div>
+
+<!-- 3. パスワードロック画面 -->
+<div id="password-screen" class="mobile-container">
+    <div class="header">ｾｷｭﾘﾃｨﾛｯｸ</div>
+    <div class="pw-container">
+        <div class="pw-title">端末暗証番号を入力してください</div>
+        <!-- inputmodeでiPadの数字キーボードを呼び出します -->
+        <input type="password" id="password-input" class="pw-input" maxlength="4" inputmode="numeric" pattern="[0-9]*">
+        <br>
+        <button class="pw-btn" onclick="checkPassword()">解除</button>
     </div>
 </div>
 
+<!-- 4. メール画面（指示書） -->
 <div id="mail-screen" class="mobile-container">
     <div class="header">ﾒｰﾙ受信</div>
     <div class="mail-form">
@@ -179,135 +267,101 @@
         </div>
     </div>
     <div class="footer-buttons">
-        <button class="btn" onclick="resetScreen()">次へ戻る</button>
-        <button class="btn" onclick="alert('承知いたしました。')">確認</button>
+        <button class="btn" onclick="finishMission()">承知いたしました</button>
     </div>
 </div>
 
-<audio id="scan-sound" src="https://www.soundjay.com/buttons/sounds/button-47.mp3" preload="auto"></audio>
-<audio id="ringtone" src="https://www.soundjay.com/buttons/sounds/button-09.mp3" preload="auto"></audio>
+<!-- 音声ファイル -->
+<!-- 激しめの着信音（古い電話のベル） -->
+<audio id="call-sound" src="https://www.soundjay.com/phone/telephone-ring-04.mp3" loop preload="auto"></audio>
+<!-- メール受信音 -->
+<audio id="mail-sound" src="https://www.soundjay.com/buttons/sounds/button-09.mp3" preload="auto"></audio>
 
 <script>
     const missions = [
-        { 
-            sender: "田中智", receiver: "吉野", subject: "本日の業務指示", 
-            body: "【指示事項】\n\n鉄雄を殴る花道になりきり\n『これはカニちゃんの分！』\nと言って乾杯の音頭を取りなさい。" 
-        },
-        { 
-            sender: "田中智", receiver: "森", subject: "本日の業務指示", 
-            body: "【指示事項】\n\n目の前のアルコールドリンクを\nすべて平らげた上で、\n\n田中先輩にSEJ関係者（店舗従業員含む）\n何人と関係を持ったか\n正確に報告せよ。" 
-        },
-        { 
-            sender: "田中智", receiver: "安藤", subject: "本日の業務指示", 
-            body: "【指示事項】\n\nあなたはカタギではないので、\n大人しくしていて下さい。" 
-        },
-        { 
-            sender: "田中智", receiver: "井上", subject: "本日の業務指示", 
-            body: "【指示事項】\n\n田中さんの乳首に人差し指を当てて\n\n北大出身の田中さんへ\n『智くんよ、大志を抱け』\nと言ってあげなさい。" 
-        },
-        { 
-            sender: "田中智", receiver: "冨澤", subject: "本日の業務指示", 
-            body: "【指示事項】\n\n財布にある一番大きな額のお札を、\n田中智の胸ポケットに\nそっと入れなさい。" 
-        },
-        { 
-            sender: "田中智", receiver: "天野", subject: "本日の業務指示", 
-            body: "【指示事項】\n\n今はシュッとした出世頭になっているが\n昔のかなりイキっていた頃の\n写真があるはず。\n\nそれを皆に公開せよ。" 
-        },
-        { 
-            sender: "田中智", receiver: "谷", subject: "本日の業務指示", 
-            body: "【指示事項】\n\nあなたには未来があります。\n\nここにいる連中とお付き合いするのは\n控えた方が良いと思います。" 
-        },
-        { 
-            sender: "田中智", receiver: "菊屋", subject: "本日の業務指示", 
-            body: "【指示事項】\n\n最近の奥さんとの性生活の状況を\n素直に答えなさい。" 
-        },
-        { 
-            sender: "田中智", receiver: "松崎", subject: "本日の業務指示", 
-            body: "【指示事項】\n\nあなたは関西出身なので\nなにわのモーツァルト、\nキダタローのモノマネでもして\n周りを冷笑させなさい。" 
-        },
-        { 
-            sender: "蟹江", receiver: "田中智", subject: "送別の言葉", 
-            body: "（ここに後ほどメッセージを記入します。\n準備ができたら教えてください）" 
-        }
+        { sender: "田中智", receiver: "吉野", subject: "本日の業務指示", body: "【指示事項】\n\n鉄雄を殴る花道になりきり\n『これはカニちゃんの分！』\nと言って乾杯の音頭を取りなさい。" },
+        { sender: "田中智", receiver: "森", subject: "本日の業務指示", body: "【指示事項】\n\n目の前のアルコールドリンクを\nすべて平らげた上で、\n\n田中先輩にSEJ関係者（店舗従業員含む）\n何人と関係を持ったか\n正確に報告せよ。" },
+        { sender: "田中智", receiver: "安藤", subject: "本日の業務指示", body: "【指示事項】\n\nあなたはカタギではないので、\n大人しくしていて下さい。" },
+        { sender: "田中智", receiver: "井上", subject: "本日の業務指示", body: "【指示事項】\n\n田中さんの乳首に人差し指を当てて\n\n北大出身の田中さんへ\n『智くんよ、大志を抱け』\nと言ってあげなさい。" },
+        { sender: "田中智", receiver: "冨澤", subject: "本日の業務指示", body: "【指示事項】\n\n財布にある一番大きな額のお札を、\n田中智の胸ポケットに\nそっと入れなさい。" },
+        { sender: "田中智", receiver: "天野", subject: "本日の業務指示", body: "【指示事項】\n\n今はシュッとした出世頭になっているが\n昔のかなりイキっていた頃の\n写真があるはず。\n\nそれを皆に公開せよ。" },
+        { sender: "田中智", receiver: "谷", subject: "本日の業務指示", body: "【指示事項】\n\nあなたには未来があります。\n\nここにいる連中とお付き合いするのは\n控えた方が良いと思います。" },
+        { sender: "田中智", receiver: "菊屋", subject: "本日の業務指示", body: "【指示事項】\n\n最近の奥さんとの性生活の状況を\n素直に答えなさい。" },
+        { sender: "田中智", receiver: "松崎", subject: "本日の業務指示", body: "【指示事項】\n\nあなたは関西出身なので\nなにわのモーツァルト、\nキダタローのモノマネでもして\n周りを冷笑させなさい。" },
+        { sender: "蟹江", receiver: "田中智", subject: "送別の言葉", body: "（ここに後ほどメッセージを記入します。\n準備ができたら教えてください）" }
     ];
 
     let currentIndex = 0;
-    let html5QrCode;
+    const SECRET_PW = "0721"; // 指定のパスワード
 
-    function startCamera() {
+    function startCall() {
         if (currentIndex >= missions.length) {
             alert("全てのアイコミ指示が完了しました。");
             return;
         }
-
-        const scanSound = document.getElementById('scan-sound');
-        const ringtone = document.getElementById('ringtone');
         
-        scanSound.volume = 0;
-        ringtone.volume = 0;
+        // 画面を切り替えて着信音をループ再生
+        document.getElementById('standby-screen').style.display = 'none';
+        document.getElementById('calling-screen').style.display = 'flex';
         
-        Promise.all([scanSound.play(), ringtone.play()]).then(() => {
-            scanSound.pause();
-            scanSound.currentTime = 0;
-            scanSound.volume = 1;
-            
-            ringtone.pause();
-            ringtone.currentTime = 0;
-            ringtone.volume = 1;
-        }).catch(e => console.log("Audio init error:", e));
-
-        document.getElementById('start-btn').style.display = 'none';
-        document.querySelector('.intro-text').style.display = 'none';
-        document.getElementById('reader').style.display = 'block';
-
-        html5QrCode = new Html5Qrcode("reader");
-        html5QrCode.start(
-            { facingMode: "environment" },
-            { fps: 10, qrbox: { width: 250, height: 250 } },
-            (decodedText, decodedResult) => {
-                // スキャン音
-                document.getElementById('scan-sound').play().catch(e => console.log(e));
-                
-                // バイブレーション（Android等対応端末のみ）
-                if (navigator.vibrate) {
-                    navigator.vibrate(200); 
-                }
-                
-                html5QrCode.stop().then(() => {
-                    document.getElementById('reader').style.display = 'none';
-                    triggerSequentialMission();
-                }).catch(err => console.log("カメラ停止エラー", err));
-            },
-            (errorMessage) => {}
-        ).catch((err) => {
-            alert("カメラを起動できませんでした。");
-            resetScreen();
-        });
+        const callSound = document.getElementById('call-sound');
+        callSound.currentTime = 0;
+        callSound.play().catch(e => console.log(e));
+        
+        // バイブレーション（Android等対応端末のみ）
+        if (navigator.vibrate) {
+            navigator.vibrate([1000, 500, 1000, 500, 1000]); 
+        }
     }
 
-    function triggerSequentialMission() {
-        const currentMission = missions[currentIndex];
+    function answerCall() {
+        // 着信音を止める
+        const callSound = document.getElementById('call-sound');
+        callSound.pause();
+        if (navigator.vibrate) navigator.vibrate(0); // バイブ停止
 
-        document.getElementById('mail-sender').value = currentMission.sender;
-        document.getElementById('mail-receiver').value = currentMission.receiver;
-        document.getElementById('mail-subject').value = currentMission.subject;
-        document.getElementById('mail-body').value = currentMission.body;
+        // パスワード画面へ
+        document.getElementById('calling-screen').style.display = 'none';
+        document.getElementById('password-screen').style.display = 'block';
+        
+        // 入力欄をリセットしてフォーカスを当てる
+        const pwInput = document.getElementById('password-input');
+        pwInput.value = "";
+        pwInput.focus();
+    }
 
-        setTimeout(() => {
-            document.getElementById('ringtone').play().catch(e => console.log(e));
+    function checkPassword() {
+        const inputVal = document.getElementById('password-input').value;
+        
+        if (inputVal === SECRET_PW) {
+            // パスワード正解
+            document.getElementById('password-screen').style.display = 'none';
             
-            document.getElementById('scan-screen').style.display = 'none';
+            // 指示内容をセット
+            const currentMission = missions[currentIndex];
+            document.getElementById('mail-sender').value = currentMission.sender;
+            document.getElementById('mail-receiver').value = currentMission.receiver;
+            document.getElementById('mail-subject').value = currentMission.subject;
+            document.getElementById('mail-body').value = currentMission.body;
+            
+            // メール受信音を鳴らす
+            document.getElementById('mail-sound').play().catch(e => console.log(e));
+            
+            // メール画面を表示
             document.getElementById('mail-screen').style.display = 'block';
             
-            currentIndex++;
-        }, 500);
+            currentIndex++; // 次の人へ進める
+        } else {
+            // パスワード不正解
+            alert("暗証番号が違います。");
+            document.getElementById('password-input').value = "";
+        }
     }
 
-    function resetScreen() {
+    function finishMission() {
+        // 待機画面に戻る
         document.getElementById('mail-screen').style.display = 'none';
-        document.getElementById('scan-screen').style.display = 'block';
-        document.getElementById('start-btn').style.display = 'block';
-        document.querySelector('.intro-text').style.display = 'block';
+        document.getElementById('standby-screen').style.display = 'block';
     }
 </script>
 
