@@ -141,7 +141,6 @@
 </head>
 <body>
 
-<!-- 1. スキャン画面 -->
 <div id="scan-screen" class="mobile-container">
     <div class="header">i-mode ﾊﾞｰｺｰﾄﾞﾘｰﾀﾞ</div>
     
@@ -159,7 +158,6 @@
     </div>
 </div>
 
-<!-- 2. メール画面 -->
 <div id="mail-screen" class="mobile-container">
     <div class="header">ﾒｰﾙ受信</div>
     <div class="mail-form">
@@ -186,10 +184,11 @@
     </div>
 </div>
 
+<!-- 音声ファイルの追加（スキャン音と着信音） -->
+<audio id="scan-sound" src="https://www.soundjay.com/buttons/sounds/button-47.mp3" preload="auto"></audio>
 <audio id="ringtone" src="https://www.soundjay.com/buttons/sounds/button-09.mp3" preload="auto"></audio>
 
 <script>
-    // 順番通りに表示するためのミッション配列（順番固定）
     const missions = [
         { sender: "田中智", receiver: "吉野", subject: "本日の業務指示", body: "鉄雄を殴る花道になりきり『これはカニちゃんの分！』と言って乾杯の音頭を取りなさい" },
         { sender: "田中智", receiver: "森", subject: "本日の業務指示", body: "目の前のアルコールドリンクをすべて平らげた上で、田中先輩にSEJ関係者（店舗従業員含む）何人と関係を持ったか正確に報告せよ" },
@@ -200,11 +199,10 @@
         { sender: "田中智", receiver: "谷", subject: "本日の業務指示", body: "あなたには未来があります、ここにいる連中とお付き合いするのは控えた方が良いと思います" },
         { sender: "田中智", receiver: "菊屋", subject: "本日の業務指示", body: "最近の奥さんとの性生活の状況を素直に答えなさい" },
         { sender: "田中智", receiver: "松崎", subject: "本日の業務指示", body: "あなたは関西出身なのでなにわのモーツァルト、キダタローのモノマネでもして周りを冷笑させなさい" },
-        // 最後は蟹江さんからの送別の言葉
         { sender: "蟹江", receiver: "田中智", subject: "送別の言葉", body: "（ここに後ほどメッセージを記入します。準備ができたら教えてください）" }
     ];
 
-    let currentIndex = 0; // 現在の順番を管理する変数
+    let currentIndex = 0;
     let html5QrCode;
 
     function startCamera() {
@@ -213,16 +211,25 @@
             return;
         }
 
+        // iPad等のブラウザ制限対策: タップ時に音声を一度ロード＆ミュート再生しておく
+        const scanSound = document.getElementById('scan-sound');
         const ringtone = document.getElementById('ringtone');
+        
+        scanSound.volume = 0;
         ringtone.volume = 0;
-        ringtone.play().then(() => {
+        
+        Promise.all([scanSound.play(), ringtone.play()]).then(() => {
+            scanSound.pause();
+            scanSound.currentTime = 0;
+            scanSound.volume = 1;
+            
             ringtone.pause();
             ringtone.currentTime = 0;
             ringtone.volume = 1;
         }).catch(e => console.log("Audio init error:", e));
 
         document.getElementById('start-btn').style.display = 'none';
-        document.querySelector('.intro-text').style.display = 'none'; // スキャン中は説明文を隠す
+        document.querySelector('.intro-text').style.display = 'none';
         document.getElementById('reader').style.display = 'block';
 
         html5QrCode = new Html5Qrcode("reader");
@@ -230,6 +237,9 @@
             { facingMode: "environment" },
             { fps: 10, qrbox: { width: 250, height: 250 } },
             (decodedText, decodedResult) => {
+                // ▼ スキャン成功した瞬間に「ピッ」と鳴らす ▼
+                document.getElementById('scan-sound').play().catch(e => console.log(e));
+                
                 html5QrCode.stop().then(() => {
                     document.getElementById('reader').style.display = 'none';
                     triggerSequentialMission();
@@ -245,23 +255,20 @@
     function triggerSequentialMission() {
         const currentMission = missions[currentIndex];
 
-        // 画面にデータをセット（差出人・宛先・件名・本文すべて動的に変更）
         document.getElementById('mail-sender').value = currentMission.sender;
         document.getElementById('mail-receiver').value = currentMission.receiver;
         document.getElementById('mail-subject').value = currentMission.subject;
         document.getElementById('mail-body').value = currentMission.body;
 
-        const ringtone = document.getElementById('ringtone');
-        ringtone.currentTime = 0;
-        ringtone.play().catch(e => console.log("音声再生エラー:", e));
-
+        // 0.5秒遅らせて着信音を鳴らし、画面を切り替える（リアルな演出）
         setTimeout(() => {
+            document.getElementById('ringtone').play().catch(e => console.log(e));
+            
             document.getElementById('scan-screen').style.display = 'none';
             document.getElementById('mail-screen').style.display = 'block';
             
-            // 次の人のためにカウントを進める
             currentIndex++;
-        }, 800);
+        }, 500);
     }
 
     function resetScreen() {
