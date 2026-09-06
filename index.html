@@ -109,14 +109,14 @@
     }
     .body-group textarea {
         width: 100%;
-        height: 180px;
+        height: 200px;
         border: 1px solid #ccc;
         font-size: 15px;
-        padding: 8px;
+        padding: 10px;
         box-sizing: border-box;
         resize: none;
         background-color: #fafafa;
-        line-height: 1.5;
+        line-height: 1.6;
     }
     .footer-buttons {
         display: flex;
@@ -184,22 +184,51 @@
     </div>
 </div>
 
-<!-- 音声ファイルの追加（スキャン音と着信音） -->
 <audio id="scan-sound" src="https://www.soundjay.com/buttons/sounds/button-47.mp3" preload="auto"></audio>
 <audio id="ringtone" src="https://www.soundjay.com/buttons/sounds/button-09.mp3" preload="auto"></audio>
 
 <script>
     const missions = [
-        { sender: "田中智", receiver: "吉野", subject: "本日の業務指示", body: "鉄雄を殴る花道になりきり『これはカニちゃんの分！』と言って乾杯の音頭を取りなさい" },
-        { sender: "田中智", receiver: "森", subject: "本日の業務指示", body: "目の前のアルコールドリンクをすべて平らげた上で、田中先輩にSEJ関係者（店舗従業員含む）何人と関係を持ったか正確に報告せよ" },
-        { sender: "田中智", receiver: "安藤", subject: "本日の業務指示", body: "あなたはカタギではないので、大人しくしていて下さい" },
-        { sender: "田中智", receiver: "井上", subject: "本日の業務指示", body: "田中さんの乳首に人差し指を当てて北大出身の田中さんへ『智くんよ　大志を抱け』と言ってあげなさい" },
-        { sender: "田中智", receiver: "冨澤", subject: "本日の業務指示", body: "財布にある一番大きな額のお札を田中智の胸ポケットにそっと入れなさい" },
-        { sender: "田中智", receiver: "天野", subject: "本日の業務指示", body: "今はシュッとした出世頭になっているが、昔のかなりイキっていた頃の写真があるはず。それを皆に公開せよ" },
-        { sender: "田中智", receiver: "谷", subject: "本日の業務指示", body: "あなたには未来があります、ここにいる連中とお付き合いするのは控えた方が良いと思います" },
-        { sender: "田中智", receiver: "菊屋", subject: "本日の業務指示", body: "最近の奥さんとの性生活の状況を素直に答えなさい" },
-        { sender: "田中智", receiver: "松崎", subject: "本日の業務指示", body: "あなたは関西出身なのでなにわのモーツァルト、キダタローのモノマネでもして周りを冷笑させなさい" },
-        { sender: "蟹江", receiver: "田中智", subject: "送別の言葉", body: "（ここに後ほどメッセージを記入します。準備ができたら教えてください）" }
+        { 
+            sender: "田中智", receiver: "吉野", subject: "本日の業務指示", 
+            body: "【指示事項】\n\n鉄雄を殴る花道になりきり\n『これはカニちゃんの分！』\nと言って乾杯の音頭を取りなさい。" 
+        },
+        { 
+            sender: "田中智", receiver: "森", subject: "本日の業務指示", 
+            body: "【指示事項】\n\n目の前のアルコールドリンクを\nすべて平らげた上で、\n\n田中先輩にSEJ関係者（店舗従業員含む）\n何人と関係を持ったか\n正確に報告せよ。" 
+        },
+        { 
+            sender: "田中智", receiver: "安藤", subject: "本日の業務指示", 
+            body: "【指示事項】\n\nあなたはカタギではないので、\n大人しくしていて下さい。" 
+        },
+        { 
+            sender: "田中智", receiver: "井上", subject: "本日の業務指示", 
+            body: "【指示事項】\n\n田中さんの乳首に人差し指を当てて\n\n北大出身の田中さんへ\n『智くんよ、大志を抱け』\nと言ってあげなさい。" 
+        },
+        { 
+            sender: "田中智", receiver: "冨澤", subject: "本日の業務指示", 
+            body: "【指示事項】\n\n財布にある一番大きな額のお札を、\n田中智の胸ポケットに\nそっと入れなさい。" 
+        },
+        { 
+            sender: "田中智", receiver: "天野", subject: "本日の業務指示", 
+            body: "【指示事項】\n\n今はシュッとした出世頭になっているが\n昔のかなりイキっていた頃の\n写真があるはず。\n\nそれを皆に公開せよ。" 
+        },
+        { 
+            sender: "田中智", receiver: "谷", subject: "本日の業務指示", 
+            body: "【指示事項】\n\nあなたには未来があります。\n\nここにいる連中とお付き合いするのは\n控えた方が良いと思います。" 
+        },
+        { 
+            sender: "田中智", receiver: "菊屋", subject: "本日の業務指示", 
+            body: "【指示事項】\n\n最近の奥さんとの性生活の状況を\n素直に答えなさい。" 
+        },
+        { 
+            sender: "田中智", receiver: "松崎", subject: "本日の業務指示", 
+            body: "【指示事項】\n\nあなたは関西出身なので\nなにわのモーツァルト、\nキダタローのモノマネでもして\n周りを冷笑させなさい。" 
+        },
+        { 
+            sender: "蟹江", receiver: "田中智", subject: "送別の言葉", 
+            body: "（ここに後ほどメッセージを記入します。\n準備ができたら教えてください）" 
+        }
     ];
 
     let currentIndex = 0;
@@ -211,7 +240,6 @@
             return;
         }
 
-        // iPad等のブラウザ制限対策: タップ時に音声を一度ロード＆ミュート再生しておく
         const scanSound = document.getElementById('scan-sound');
         const ringtone = document.getElementById('ringtone');
         
@@ -237,7 +265,6 @@
             { facingMode: "environment" },
             { fps: 10, qrbox: { width: 250, height: 250 } },
             (decodedText, decodedResult) => {
-                // ▼ スキャン成功した瞬間に「ピッ」と鳴らす ▼
                 document.getElementById('scan-sound').play().catch(e => console.log(e));
                 
                 html5QrCode.stop().then(() => {
@@ -260,7 +287,6 @@
         document.getElementById('mail-subject').value = currentMission.subject;
         document.getElementById('mail-body').value = currentMission.body;
 
-        // 0.5秒遅らせて着信音を鳴らし、画面を切り替える（リアルな演出）
         setTimeout(() => {
             document.getElementById('ringtone').play().catch(e => console.log(e));
             
