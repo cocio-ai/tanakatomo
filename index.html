@@ -265,7 +265,13 @@
             { facingMode: "environment" },
             { fps: 10, qrbox: { width: 250, height: 250 } },
             (decodedText, decodedResult) => {
+                // スキャン音
                 document.getElementById('scan-sound').play().catch(e => console.log(e));
+                
+                // バイブレーション（Android等対応端末のみ）
+                if (navigator.vibrate) {
+                    navigator.vibrate(200); 
+                }
                 
                 html5QrCode.stop().then(() => {
                     document.getElementById('reader').style.display = 'none';
