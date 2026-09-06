@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>極秘業務指示システム</title>
-<!-- バーコード読み取り用のライブラリを読み込み -->
+<!-- バーコード読み取り用のライブラリ -->
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <style>
     body {
@@ -26,7 +26,7 @@
         display: none;
     }
     #scan-screen {
-        display: block; /* 初期表示 */
+        display: block;
         text-align: center;
         padding: 20px;
     }
@@ -40,7 +40,17 @@
         letter-spacing: 2px;
         margin-bottom: 15px;
     }
-    /* カメラ映像の表示エリア */
+    .intro-text {
+        font-size: 14px;
+        color: #333;
+        text-align: left;
+        line-height: 1.5;
+        border: 1px solid #ff9900;
+        background-color: #ffffee;
+        padding: 12px;
+        margin-bottom: 20px;
+        font-weight: bold;
+    }
     #reader {
         width: 100%;
         margin-bottom: 15px;
@@ -57,6 +67,12 @@
         cursor: pointer;
         width: 100%;
         font-weight: bold;
+    }
+    .director-credit {
+        margin-top: 25px;
+        font-size: 12px;
+        color: #999;
+        text-align: right;
     }
     .mail-form {
         padding: 10px;
@@ -128,17 +144,24 @@
 <!-- 1. スキャン画面 -->
 <div id="scan-screen" class="mobile-container">
     <div class="header">i-mode ﾊﾞｰｺｰﾄﾞﾘｰﾀﾞ</div>
-    <p style="font-size: 13px; color: #666;">カメラを起動して対象を読み取ってください</p>
     
-    <!-- ここにカメラの映像が出ます -->
+    <div class="intro-text">
+        ブラック企業の社畜である皆さんは今日の主役である田中智先生の指示にすべて答える必要があります。<br><br>
+        これから指示のアイコミを流しますので、それぞれしっかりと報告して下さい。
+    </div>
+    
     <div id="reader" style="display: none;"></div>
     
-    <button id="start-btn" class="start-btn" onclick="startCamera()">カメラを起動する</button>
+    <button id="start-btn" class="start-btn" onclick="startCamera()">スキャンを起動する</button>
+    
+    <div class="director-credit">
+        directed by ファンタオナニスタ蟹江
+    </div>
 </div>
 
 <!-- 2. メール画面 -->
 <div id="mail-screen" class="mobile-container">
-    <div class="header">ﾒｰﾙ作成(報告)</div>
+    <div class="header">ﾒｰﾙ受信</div>
     <div class="mail-form">
         <div class="form-group">
             <label>差出人</label>
@@ -146,11 +169,11 @@
         </div>
         <div class="form-group">
             <label>宛先</label>
-            <input type="text" id="mail-receiver" value="田中DM" readonly>
+            <input type="text" id="mail-receiver" readonly>
         </div>
         <div class="form-group">
             <label>件名</label>
-            <input type="text" id="mail-subject" value="本日の業務報告" readonly>
+            <input type="text" id="mail-subject" readonly>
         </div>
         <div class="body-group">
             <label>本文</label>
@@ -158,97 +181,94 @@
         </div>
     </div>
     <div class="footer-buttons">
-        <button class="btn" onclick="resetScreen()">戻る</button>
-        <button class="btn" onclick="alert('送信完了しました。')">送信</button>
+        <button class="btn" onclick="resetScreen()">次へ戻る</button>
+        <button class="btn" onclick="alert('承知いたしました。')">確認</button>
     </div>
 </div>
 
 <audio id="ringtone" src="https://www.soundjay.com/buttons/sounds/button-09.mp3" preload="auto"></audio>
 
 <script>
-    // ミッション一覧（配列にすることでランダム抽出しやすくしています）
+    // 順番通りに表示するためのミッション配列（順番固定）
     const missions = [
-        { sender: "吉野", body: "鉄雄を殴る花道になりきり『これはカニちゃんの分！』と言って乾杯の音頭を取りなさい" },
-        { sender: "冨澤", body: "財布にある一番大きな額のお札を田中智の胸ポケットにそっと入れなさい" },
-        { sender: "安藤", body: "あなたはカタギではないので、大人しくしていて下さい" },
-        { sender: "菊屋", body: "最近の奥さんとの性生活の状況を素直に答えなさい" },
-        { sender: "井上", body: "田中さんの乳首に人差し指を当てて北大出身の田中さんへ『智くんよ　大志を抱け』と言ってあげなさい" },
-        { sender: "松崎", body: "あなたは関西出身なのでなにわのモーツァルト、キダタローのモノマネでもして周りを冷笑させなさい" },
-        { sender: "森", body: "目の前のアルコールドリンクをすべて平らげた上で、田中先輩にSEJ関係者（店舗従業員含む）何人と関係を持ったか正確に報告せよ" },
-        { sender: "谷", body: "あなたには未来があります、ここにいる連中とお付き合いするのは控えた方が良いと思います" },
-        { sender: "天野", body: "今はシュッとした出世頭になっているが、昔のかなりイキっていた頃の写真があるはず。それを皆に公開せよ" }
+        { sender: "田中智", receiver: "吉野", subject: "本日の業務指示", body: "鉄雄を殴る花道になりきり『これはカニちゃんの分！』と言って乾杯の音頭を取りなさい" },
+        { sender: "田中智", receiver: "森", subject: "本日の業務指示", body: "目の前のアルコールドリンクをすべて平らげた上で、田中先輩にSEJ関係者（店舗従業員含む）何人と関係を持ったか正確に報告せよ" },
+        { sender: "田中智", receiver: "安藤", subject: "本日の業務指示", body: "あなたはカタギではないので、大人しくしていて下さい" },
+        { sender: "田中智", receiver: "井上", subject: "本日の業務指示", body: "田中さんの乳首に人差し指を当てて北大出身の田中さんへ『智くんよ　大志を抱け』と言ってあげなさい" },
+        { sender: "田中智", receiver: "冨澤", subject: "本日の業務指示", body: "財布にある一番大きな額のお札を田中智の胸ポケットにそっと入れなさい" },
+        { sender: "田中智", receiver: "天野", subject: "本日の業務指示", body: "今はシュッとした出世頭になっているが、昔のかなりイキっていた頃の写真があるはず。それを皆に公開せよ" },
+        { sender: "田中智", receiver: "谷", subject: "本日の業務指示", body: "あなたには未来があります、ここにいる連中とお付き合いするのは控えた方が良いと思います" },
+        { sender: "田中智", receiver: "菊屋", subject: "本日の業務指示", body: "最近の奥さんとの性生活の状況を素直に答えなさい" },
+        { sender: "田中智", receiver: "松崎", subject: "本日の業務指示", body: "あなたは関西出身なのでなにわのモーツァルト、キダタローのモノマネでもして周りを冷笑させなさい" },
+        // 最後は蟹江さんからの送別の言葉
+        { sender: "蟹江", receiver: "田中智", subject: "送別の言葉", body: "（ここに後ほどメッセージを記入します。準備ができたら教えてください）" }
     ];
 
+    let currentIndex = 0; // 現在の順番を管理する変数
     let html5QrCode;
 
     function startCamera() {
-        // iPad(iOS)の仕様上、最初にユーザーが画面をタップした時に音声を空再生しないと、後から音が鳴らないための対策
+        if (currentIndex >= missions.length) {
+            alert("全てのアイコミ指示が完了しました。");
+            return;
+        }
+
         const ringtone = document.getElementById('ringtone');
-        ringtone.volume = 0; // 一旦無音に
+        ringtone.volume = 0;
         ringtone.play().then(() => {
             ringtone.pause();
             ringtone.currentTime = 0;
-            ringtone.volume = 1; // 音量を戻す
+            ringtone.volume = 1;
         }).catch(e => console.log("Audio init error:", e));
 
-        // UIの切り替え
         document.getElementById('start-btn').style.display = 'none';
+        document.querySelector('.intro-text').style.display = 'none'; // スキャン中は説明文を隠す
         document.getElementById('reader').style.display = 'block';
 
-        // カメラの起動処理（環境カメラ＝外側のカメラを使用）
         html5QrCode = new Html5Qrcode("reader");
         html5QrCode.start(
             { facingMode: "environment" },
-            {
-                fps: 10,
-                qrbox: { width: 250, height: 250 }
-            },
+            { fps: 10, qrbox: { width: 250, height: 250 } },
             (decodedText, decodedResult) => {
-                // ▼ バーコードを読み取った瞬間の処理 ▼
                 html5QrCode.stop().then(() => {
-                    // カメラを止めてランダム処理へ
                     document.getElementById('reader').style.display = 'none';
-                    triggerRandomMission();
-                }).catch(err => {
-                    console.log("カメラ停止エラー", err);
-                });
+                    triggerSequentialMission();
+                }).catch(err => console.log("カメラ停止エラー", err));
             },
-            (errorMessage) => {
-                // 読み取り中のエラーは無視してOK
-            }
+            (errorMessage) => {}
         ).catch((err) => {
-            alert("カメラへのアクセスが拒否されたか、エラーが発生しました。");
-            document.getElementById('start-btn').style.display = 'block';
-            document.getElementById('reader').style.display = 'none';
+            alert("カメラを起動できませんでした。");
+            resetScreen();
         });
     }
 
-    function triggerRandomMission() {
-        // ランダムで1つ選ぶ
-        const randomIndex = Math.floor(Math.random() * missions.length);
-        const selectedMission = missions[randomIndex];
+    function triggerSequentialMission() {
+        const currentMission = missions[currentIndex];
 
-        // 画面にセット
-        document.getElementById('mail-sender').value = selectedMission.sender;
-        document.getElementById('mail-body').value = selectedMission.body;
+        // 画面にデータをセット（差出人・宛先・件名・本文すべて動的に変更）
+        document.getElementById('mail-sender').value = currentMission.sender;
+        document.getElementById('mail-receiver').value = currentMission.receiver;
+        document.getElementById('mail-subject').value = currentMission.subject;
+        document.getElementById('mail-body').value = currentMission.body;
 
-        // 着信音を鳴らす
         const ringtone = document.getElementById('ringtone');
         ringtone.currentTime = 0;
         ringtone.play().catch(e => console.log("音声再生エラー:", e));
 
-        // 0.8秒待ってからメール画面へ切り替え
         setTimeout(() => {
             document.getElementById('scan-screen').style.display = 'none';
             document.getElementById('mail-screen').style.display = 'block';
+            
+            // 次の人のためにカウントを進める
+            currentIndex++;
         }, 800);
     }
 
     function resetScreen() {
-        // 戻るボタンを押した時、再びカメラ起動ボタンを表示
         document.getElementById('mail-screen').style.display = 'none';
         document.getElementById('scan-screen').style.display = 'block';
         document.getElementById('start-btn').style.display = 'block';
+        document.querySelector('.intro-text').style.display = 'block';
     }
 </script>
 
