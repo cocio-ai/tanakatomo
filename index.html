@@ -113,6 +113,10 @@
         margin: 20px;
         font-weight: bold;
     }
+    .intro-text a {
+        color: #0033cc;
+        text-decoration: underline;
+    }
     .status-text {
         text-align: center;
         font-size: 14px;
@@ -276,6 +280,7 @@
 <!-- 2. 待機画面 -->
 <div id="standby-screen" class="mobile-container">
     <div class="header">i-mode アイコミ待機中</div>
+    <!-- innerHTMLでタグを展開するため、idをつけておきます -->
     <div class="intro-text" id="intro-box">
         ブラック企業の社畜である皆さんは今日の主役である田中智先生の指示にすべて答える必要があります。<br><br>
         これから指示のアイコミを流しますので、それぞれしっかりと報告して下さい。
@@ -328,51 +333,60 @@
         { 
             sender: "田中智", receiver: "吉野", subject: "本日の業務指示", 
             body: "【指示事項】\n\n鉄雄を殴る花道になりきり\n『これはカニちゃんの分！』\nと言って乾杯の音頭を取りなさい。",
-            nextIntro: "ドパガキの皆さん、仕組みは分かりましたか？\n\nちゃんと指示に従って下さいね。\n特に冨澤さん・森さん・松崎さん、見てますよ。" 
+            // 吉野完了後（2個目の待機画面）
+            nextIntro: "ドパガキの皆さん、仕組みは分かりましたか？<br><br>ちゃんと指示に従って下さいね。<br>特に冨澤さん・森さん・松崎さん、見てますよ。" 
         },
         { 
             sender: "田中智", receiver: "森", subject: "本日の業務指示", 
             body: "【指示事項】\n\n目の前のアルコールドリンクを\nすべて平らげた上で、\n\n田中先輩にSEJ関係者（店舗従業員含む）\n何人と関係を持ったか\n正確に報告せよ。",
-            nextIntro: "第2次アイコミ指令を受信します。\n\n社畜の皆様、お酒が進んできた頃かと思いますが、気の緩みは許されません。\n次のターゲットへ接続します。" 
+            // 森完了後（3個目の待機画面）
+            nextIntro: "【おすすめ店舗のご紹介】<br>〜セブンイレブン尾張旭晴丘町池上店〜<br><br>つくば駅から当店までのアクセス：<br>TXで秋葉原へ出て、東京から東海道新幹線で名古屋へ。地下鉄東山線で藤が丘まで行き、名鉄バスで「晴丘」下車。<br>所要時間：約3時間45分（片道約14,000円）<br><br>ちょっとしたお散歩気分で、いつでも気軽にお立ち寄りください！" 
         },
         { 
             sender: "田中智", receiver: "安藤", subject: "本日の業務指示", body: "【指示事項】\n\nあなたはカタギではないので、\n大人しくしていて下さい。",
-            nextIntro: "組織の粛清が進んでおります。\n\n次なる指示はさらに重大な機密に関わるものです。心してボタンを押してください。" 
+            // 安藤完了後（4個目の待機画面）
+            nextIntro: "【おすすめ店舗のご紹介】<br>〜セブンイレブン尾張旭晴丘町池上店〜<br><br>地域の皆様に愛されて（おそらく）高評価！<br>Googleマップ評価：★4.8（※店長調べ）<br><br><a href='https://maps.app.goo.gl/tWpS8jH3Y9F2T3hE8' target='_blank'>📍Googleマップで場所を確認する</a><br><br>※レビューには必ず星5をつける業務が全員に課されています。" 
         },
         { 
             sender: "田中智", receiver: "井上", subject: "本日の業務指示", 
             body: "【指示事項】\n\n田中さんの乳首に人差し指を当てて\n\n北大出身の田中さんへ\n『智くんよ、大志を抱け』\nと言って気持ちよく送り出してあげて下さい。",
-            nextIntro: "重役からの直接指導フェーズに移行します。\n\n現場の空気を凍らせぬよう、迅速かつ丁寧な業務遂行を求めます。" 
+            // 井上完了後（5個目の待機画面）
+            nextIntro: "【尾張旭市プチ情報】<br>当店の所在地である尾張旭市は、実は「おいしい紅茶の店」店舗数日本一に輝いたこともある『紅茶の街』です。<br><br>ブラック企業で疲れた社畜の皆様も、優雅なティータイムで荒んだ心を癒やしてみてはいかがでしょうか。もちろん、当店でもセブンカフェの美味しいお茶をご用意しております。" 
         },
         { 
             sender: "田中智", receiver: "冨澤", subject: "本日の業務指示", 
             body: "【指示事項】\n\n財布にある一番大きな額のお札を、\n田中智の胸ポケットに\nそっと入れなさい。",
-            nextIntro: "抜き打ちの資産没収フェーズです。\n\n私財の提供を惜しむ者は、ブラック企業の洗礼を受けることになります。" 
+            // 冨澤完了後（6個目の待機画面）
+            nextIntro: "【店舗公式Instagramのお知らせ】<br>セブンイレブン尾張旭晴丘町池上店では、最新情報やPOP（私の力作）をインスタグラムで発信中！<br><br><a href='https://www.instagram.com/711ikegami/' target='_blank'>📷 @711ikegami をフォローする</a><br><br>※フォローしていない参加者は、後ほど裏に呼び出されます。" 
         },
         { 
             sender: "田中智", receiver: "天野", subject: "本日の業務指示", 
             body: "【指示事項】\n\n今はシュッとした出世頭になっているが\n昔のかなりイキっていた頃の\n写真があるはず。\n\nそれを皆に公開せよ。",
-            nextIntro: "過去の黒歴史発掘セッションです。\n\n出世頭のメッキが剥がれる瞬間を、全員で共有・記録してください。" 
+            // 天野完了後（7個目の待機画面）
+            nextIntro: "【ディレクター（蟹江）の近況報告 ①】<br><br>私事ですが、長女と次女が現在ダブル受験生として奮闘しております。<br>来年、晴れて大学生と高校生になった暁には、速やかにセブンイレブンでバイトを開始させる予定です。英才教育（社畜教育）は家庭内から始まっています。" 
         },
         { 
             sender: "田中智", receiver: "谷", subject: "本日の業務指示", 
             body: "【指示事項】\n\nあなたには未来があります。\n\nここにいる連中とお付き合いするのは\n控えた方が良いと思います。",
-            nextIntro: "終盤戦に突入しました。\n\n残された時間はわずかです。最後まで社畜としての本分を全うしてください。" 
+            // 谷完了後（8個目の待機画面）
+            nextIntro: "【ディレクター（蟹江）の近況報告 ②】<br><br>最近、「森間伐の会」に入会しました。<br>主に秋から春にかけて、瀬戸市の森でチェーンソーを片手に間伐作業に勤しんでおります。皆様、夜道と森の中にはくれぐれもお気をつけください。" 
         },
         { 
             sender: "田中智", receiver: "菊屋", subject: "本日の業務指示", 
             body: "【指示事項】\n\n最近の奥さんとの性生活の状況を\n素直に答えなさい。",
-            nextIntro: "プライバシー完全無視の個人情報監査です。\n\n逃げ場はありません。素直な回答を入力・発言してください。" 
+            // 菊屋完了後（9個目の待機画面）
+            nextIntro: "全ての業務指示の消化が近づいております。<br><br>最後の指示を受信する前に、グラスの空き状況と心の準備を再度ご確認ください。" 
         },
         { 
             sender: "田中智", receiver: "松崎", subject: "本日の業務指示", 
             body: "【指示事項】\n\nあなたは関西出身なので\nなにわのモーツァルト、\nキダタローのモノマネでもして\n周りを冷笑させなさい。",
-            nextIntro: "全指示の消化、および最終プログラムへ移行します。\n\nフィナーレにふさわしい、盛大な冷笑の準備を整えてください。" 
+            // 松崎完了後（10個目の待機画面）
+            nextIntro: "これにて田中DMからの全業務指示が完了いたしました。<br><br>最後に、本システムのディレクターより特別なメッセージを受信します。" 
         },
         { 
             sender: "蟹江", receiver: "田中智", subject: "送別の言葉", 
             body: "（ここに後ほどメッセージを記入します。\n準備ができたら教えてください）",
-            nextIntro: "すべての業務が完了しました。" 
+            nextIntro: "すべてのプログラムが終了しました。<br><br>田中智DM、本当にお疲れ様でした！" 
         }
     ];
 
@@ -489,10 +503,10 @@
         if (currentIndex >= missions.length) {
             document.getElementById('status-counter').innerText = "全てのプログラムが終了しました。";
             document.querySelector('.trigger-btn').style.display = 'none';
-            document.getElementById('intro-box').innerText = "お疲れ様でした。これにて全セッションは終了です。";
+            document.getElementById('intro-box').innerHTML = missions[currentIndex - 1].nextIntro;
         } else {
-            // 次の待機画面用のメッセージを代入（改行コードを維持するために innerText を使用）
-            document.getElementById('intro-box').innerText = missions[currentIndex - 1].nextIntro;
+            // innerHTMLに変更することで、改行タグ<br>やリンク<a>を機能させます
+            document.getElementById('intro-box').innerHTML = missions[currentIndex - 1].nextIntro;
             document.getElementById('status-counter').innerText = `次の指示を受信します (${currentIndex + 1}/${missions.length})`;
         }
         
