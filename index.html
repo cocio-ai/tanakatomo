@@ -312,8 +312,9 @@
     </div>
 </div>
 
-<audio id="call-sound" src="https://www.soundjay.com/phone/telephone-ring-04.mp3" loop preload="auto"></audio>
-<audio id="mail-sound" src="https://www.soundjay.com/buttons/sounds/button-09.mp3" preload="auto"></audio>
+<!-- 安定して音源を読み込めるCDNサーバーに変更 -->
+<audio id="call-sound" src="https://assets.mixkit.co/active_storage/sfx/1354/1354-preview.mp3" loop preload="auto"></audio>
+<audio id="mail-sound" src="https://assets.mixkit.co/active_storage/sfx/2574/2574-preview.mp3" preload="auto"></audio>
 
 <script>
     const missions = [
@@ -378,18 +379,20 @@
 
     function pressNum(num) {
         if (!isAudioInited) {
-            document.getElementById('call-sound').volume = 0;
-            document.getElementById('mail-sound').volume = 0;
+            const callSound = document.getElementById('call-sound');
+            const mailSound = document.getElementById('mail-sound');
+            callSound.volume = 0;
+            mailSound.volume = 0;
             Promise.all([
-                document.getElementById('call-sound').play(),
-                document.getElementById('mail-sound').play()
+                callSound.play(),
+                mailSound.play()
             ]).then(() => {
-                document.getElementById('call-sound').pause();
-                document.getElementById('call-sound').currentTime = 0;
-                document.getElementById('call-sound').volume = 1;
-                document.getElementById('mail-sound').pause();
-                document.getElementById('mail-sound').currentTime = 0;
-                document.getElementById('mail-sound').volume = 1;
+                callSound.pause();
+                callSound.currentTime = 0;
+                callSound.volume = 1;
+                mailSound.pause();
+                mailSound.currentTime = 0;
+                mailSound.volume = 1;
                 isAudioInited = true;
             }).catch(e => console.log(e));
         }
